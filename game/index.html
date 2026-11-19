@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>SOLMARA — Heat on the Shore</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="game-shell">
+  <div id="game-canvas-container"></div>
+
+  <div id="hud" class="hidden">
+    <!-- Mission box, top-left -->
+    <div id="mission-box" class="panel">
+      <div id="mission-title">JOB 1 &middot; FIRST FARE</div>
+      <div id="mission-stage-row"><span id="mission-stage">STAGE 1/3</span><span id="mission-stage-name">PICK UP DANA</span></div>
+      <div id="mission-progress-wrap"><div id="mission-progress"></div></div>
+      <div id="mission-objective">Drive to the pickup point on Strand Boulevard.</div>
+      <div id="mission-timer" class="hidden">1:15</div>
+      <div id="mission-next">NEXT &nbsp;Meet Dana at the Coral Strand cab rank</div>
+    </div>
+
+    <!-- Police response panel -->
+    <div id="police-panel" class="panel hidden">
+      <div id="police-header"><span class="police-triangle">&#9650;</span> SOLMARA PD RESPONSE <span id="police-count">6 UNITS</span></div>
+      <div id="in-sight" class="seen">&#9679; IN SIGHT</div>
+      <div id="police-list"></div>
+    </div>
+
+    <!-- Top-right: clock, cash, wanted -->
+    <div id="top-right">
+      <div id="clock">16:00 &middot; DAY 1</div>
+      <div id="cash">$18,450</div>
+      <div id="stars"></div>
+      <div id="air-unit" class="hidden">AIR UNIT DEPLOYED</div>
+    </div>
+
+    <!-- Rank box -->
+    <div id="rank-box" class="panel">
+      <div id="rank-row"><span id="rank-letter">RANK D</span><span id="rank-name">ROOKIE</span></div>
+      <div id="rank-bar-wrap"><div id="rank-bar"></div></div>
+      <div id="rank-rp">0 / 1,000 RP</div>
+    </div>
+
+    <!-- Weapon slots -->
+    <div id="weapons"></div>
+
+    <!-- Crew ability cards -->
+    <div id="crew">
+      <div class="crew-card" id="crew-z"><span class="crew-key">Z</span><span class="crew-name">SWAP PLATES</span><span class="crew-who">Dana &middot; Driver</span><span class="crew-cd"></span></div>
+      <div class="crew-card" id="crew-x"><span class="crew-key">X</span><span class="crew-name">QUICK FIX</span><span class="crew-who">Bram &middot; Mechanic</span><span class="crew-cd"></span></div>
+      <div class="crew-card" id="crew-c"><span class="crew-key">C</span><span class="crew-name">EYES OUT</span><span class="crew-who">Juno &middot; Lookout</span><span class="crew-cd"></span></div>
+    </div>
+
+    <!-- Location + district standing -->
+    <div id="location-box" class="panel">
+      <div id="district-name">CORAL STRAND</div>
+      <div id="street-name">Strand Boulevard</div>
+      <div id="standing-row"><span id="standing-label">NEUTRAL &middot; 58</span><div id="standing-bar-wrap"><div id="standing-bar"></div></div></div>
+    </div>
+
+    <!-- Minimap -->
+    <div id="minimap-wrap">
+      <canvas id="minimap" width="190" height="190"></canvas>
+      <div id="minimap-n">N</div>
+    </div>
+
+    <!-- Vitals -->
+    <div id="vitals" class="panel">
+      <div class="vital-row"><span>HEALTH</span><div class="vital-bar-wrap"><div id="health-bar" class="vital-bar health"></div></div><span id="health-num">100</span></div>
+      <div class="vital-row"><span>ARMOUR</span><div class="vital-bar-wrap"><div id="armour-bar" class="vital-bar armour"></div></div><span id="armour-num">0</span></div>
+    </div>
+
+    <!-- Speedometer -->
+    <div id="speedo">
+      <div id="speed-num">0</div>
+      <div id="speed-unit">KM/H</div>
+      <div id="car-name">ON FOOT</div>
+      <div id="car-condition"></div>
+      <div id="nitro-wrap"><span id="nitro-label">NITRO &middot; SHIFT</span><div id="nitro-bar-wrap"><div id="nitro-bar"></div></div></div>
+    </div>
+
+    <!-- Dialogue -->
+    <div id="dialogue" class="panel hidden">
+      <div id="dialogue-portrait"></div>
+      <div><div id="dialogue-name">SELMA</div><div id="dialogue-text"></div></div>
+    </div>
+
+    <!-- Radio -->
+    <div id="radio-line">SHORE FM 97.1 &mdash; Sunset Drive</div>
+
+    <!-- Center message + hints -->
+    <div id="center-msg" class="hidden"></div>
+    <div id="hint-line"></div>
+    <div id="objective-toast" class="hidden"></div>
+    <div id="stunt-popup" class="hidden"></div>
+
+    <!-- Touch controls (shown on touch devices only) -->
+    <div id="touch-controls" class="hidden">
+      <div id="touch-left">
+        <button class="touch-btn" data-key="KeyA">&#9664;</button>
+        <button class="touch-btn" data-key="KeyS">&#9660;</button>
+        <button class="touch-btn" data-key="KeyD">&#9654;</button>
+        <button class="touch-btn" data-key="KeyW">&#9650;</button>
+      </div>
+      <div id="touch-right">
+        <button class="touch-btn" data-key="KeyE">E</button>
+        <button class="touch-btn" data-key="Space">BRK</button>
+        <button class="touch-btn" data-key="shoot">FIRE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Start screen -->
+  <div id="start-screen">
+    <div id="start-inner">
+      <div id="start-kicker">AN OPEN-WORLD CRIME GAME</div>
+      <h1 id="start-title">SOLMARA</h1>
+      <div id="start-sub">HEAT ON THE SHORE</div>
+      <div id="start-tag">Six jobs. One crew. A whole city that remembers what you did.</div>
+      <div id="start-buttons">
+        <button id="btn-new" class="menu-btn primary">NEW GAME</button>
+        <button id="btn-continue" class="menu-btn hidden">CONTINUE</button>
+        <button id="btn-howto" class="menu-btn">HOW TO PLAY</button>
+      </div>
+      <div id="start-save-note"></div>
+      <div id="start-controls">WASD drive / walk &nbsp;&middot;&nbsp; E enter car &nbsp;&middot;&nbsp; Mouse aim, Click shoot &nbsp;&middot;&nbsp; 1&ndash;5 weapons &nbsp;&middot;&nbsp; Z / X / C crew &nbsp;&middot;&nbsp; Space handbrake &nbsp;&middot;&nbsp; P pause</div>
+    </div>
+  </div>
+
+  <!-- How to play -->
+  <div id="howto-screen" class="hidden">
+    <div id="howto-inner">
+      <h2>HOW TO PLAY</h2>
+      <p><b>Solmara</b> is yours: a sun-soaked coastal city. Walk it or steal any car and drive it. The yellow marker is always your next job &mdash; follow it.</p>
+      <p><b>Wanted:</b> crime raises stars. Cops chase, ram and roadblock — and they shoot, so keep moving. Break line of sight and lie low to cool off (watch the IN SIGHT pill) &mdash; or call Dana (Z) to swap plates.</p>
+      <p><b>Crew:</b> Z Swap Plates &middot; X Quick Fix (Bram repairs your car) &middot; C Eyes Out (Juno marks every cop on the map).</p>
+      <p><b>Driving:</b> Shift is nitro while driving. Drift with Space + steering, and near-miss traffic at speed — both pay cash.</p>
+      <p><b>Missions:</b> six staged jobs from Selma the fixer. Finish them to raise your rank from Rookie to Shot Caller.</p>
+      <p><b>Save:</b> progress auto-saves after every job. Continue any time from the start screen.</p>
+      <button id="btn-howto-back" class="menu-btn primary">BACK</button>
+    </div>
+  </div>
+
+  <!-- Pause screen -->
+  <div id="pause-screen" class="hidden">
+    <div id="pause-inner">
+      <h2>PAUSED</h2>
+      <div id="pause-stats"></div>
+      <button id="btn-resume" class="menu-btn primary">RESUME</button>
+      <button id="btn-save" class="menu-btn">SAVE GAME</button>
+      <button id="btn-restart-mission" class="menu-btn">RESTART JOB</button>
+      <button id="btn-quit" class="menu-btn">QUIT TO MENU</button>
+    </div>
+  </div>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
