@@ -2,7 +2,7 @@
 // directory and writes dossier.json with the kit's buildDossier.
 // Node 22, standard library only, deterministic across runs.
 import { buildDossier } from './vendor/makefun-game.ts';
-import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -20,8 +20,9 @@ if (!existsSync(gameDir)) fail('game/ is missing from the repository');
 if (!existsSync(join(gameDir, 'index.html'))) fail('game/index.html is missing');
 if (!existsSync(shotsDir)) fail('screenshots/ is missing from the repository');
 
-// Start from a clean output directory so two runs write identical bytes.
-rmSync(outDir, { recursive: true, force: true });
+// The grader hands us an empty writable output dir (mounted /output); only
+// create it, never remove it — removing it needs write access to its parent,
+// which is read-only in the grader, and rmSync throws EACCES there.
 mkdirSync(outDir, { recursive: true });
 
 cpSync(gameDir, join(outDir, 'game'), { recursive: true });
